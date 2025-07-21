@@ -4,9 +4,9 @@
 
 | Component        | Description                                                                                                                                                                                                                                                                                  |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Performance Measure** | The agent’s performance will be evaluated using multiple complementary metrics: <br>- *Accuracy* of rating predictions within ±1 star of the actual rating, accounting for subjective variation.<br>- *Precision* and *Recall* for review helpfulness classification to assess correct identification of helpful reviews.<br>- *Mean Absolute Error (MAE)* for quantifying average magnitude of rating prediction errors. |
-| **Environment**         | The agent operates within the Amazon Books Reviews Dataset environment, which contains ~3GB of historical review data with millions of user reviews and book metadata. This environment is static and partially observable, since user profiles and reading histories are incomplete. The environment reflects randomness in user preferences and review helpfulness.                            |
-| **Actuators**           | The agent’s actuators produce predictions and recommendations, including:<br>- Rating predictions on a 1–5 star scale with confidence intervals.<br>- Helpfulness scores classifying reviews as "helpful" or "not helpful" along with probability estimates.<br>- Recommendation lists ranking books personalized to each user based on predicted ratings.                                                           |
+| **Performance Measure** | By checking to see the likelihoods that are determined by the agent |
+| **Environment**         | The agent operates within an Amazon Books Review Dataset, which contains ~3GB of historical review data with millions of user reviews and book metadata. This environment is static and partially observable, since user profiles and reading histories are incomplete.                            |
+| **Actuators**           | The agent’s actuators produce predictions and recommendations, including:<br>- Rating predictions on a 1–5 star scale with confidence intervals.<br>- Helpfulness scores classifying reviews as "helpful" or "not helpful" along with probability estimates.                         |
 | **Sensors**             | The agent receives input from multiple modalities:<br>- *User features:* IDs, profile names, historical review patterns.<br>- *Book features:* Genre, author, price, publication date, description.<br>- *Review features:* Text length, sentiment, rating, timestamp.<br>- *Social features:* Helpfulness votes, total rating counts indicating popularity and credibility.                                          |
 
 ---
@@ -21,60 +21,77 @@ Uncertainty modeling is crucial for this problem because the data inherently con
 
 # Agent Setup, Data Preprocessing, Training Setup
 ## Key Variables
-- **User_Preference_Profile (latent):** Represents the hidden reading preferences of each user, inferred from review patterns.
-- **Book_Genre:** Categorical observable variable indicating the genre of a book.
 - **Rating_Prediction:** Target variable representing the rating a user gives to a book, on a scale from 1 to 5 stars.
-- **Review_Quality (latent):** Represents the intrinsic quality of a review, capturing writing quality and expertise.
-- **Review_Helpfulness:** Observable binary variable indicating whether a review is helpful (1) or not (0).
 - **Book_Popularity:** Observable variable derived from the total ratings count, indicating popularity levels (e.g., Low, High).
-- **Review_Length:** Observable categorical variable describing review length as Short, Medium, or Long based on word count.
+
   
 ## Connections
 
-- (User_Preference_Profile, Review_Quality) capture hidden factors that influence observable variables.
-- Observable nodes (e.g., Book_Genre, Review_Helpfulness, Review_Length) provide measurable input features.
-- This structure reflects how user preferences influence genre choice and ratings, while review quality affects helpfulness.
-- The model’s hierarchical structure enables reasoning under uncertainty and captures complex relationships.
+- Popularity is the parent of prediction. This comes from preestablished expectations. In successive models, more factors will be incorporated. 
 
 ## Parameter Calculation Process
 
-**Conditional Probability Tables (CPTs)** are estimated primarily using **Maximum Likelihood Estimation (MLE)** for observed variables with sufficient data.  
-  
-- Parameter estimation is supported by **pgmpy** (Python library for probabilistic graphical models), which provides implementations of Bayesian networks, EM algorithm, and CPT computation.
+**Conditional Probability Tables (CPTs)** are estimated primarily using **Maximum Likelihood Estimation (MLE)** for observed variables with sufficient data.   
+
+# Train Your Model!
+
+![Alt text](filename.jpg)
 
 
 ---
 
+# Conclusion / Results 
+
+
+### Model Summary
+
+- Bayesian Network structure: `Book_Popularity` → `Rating_Prediction`.
+- Trained on 1000 samples with Maximum Likelihood Estimation.
+- CPDs show how `Rating_Prediction` depends on `Book_Popularity`.
+
+### Numerical Results
+
+**CPDs example for `Rating_Prediction` given `Book_Popularity`:**
+
+| Rating | P(Rating \| Popularity=High) | P(Rating \| Popularity=Low) |
+|--------|------------------------------|-----------------------------|
+| 1      | 0.0677                       | 0.0721                      |
+| 2      | 0.0592                       | 0.0512                      |
+| 3      | 0.0761                       | 0.0778                      |
+| 4      | 0.2008                       | 0.2220                      |
+| 5      | 0.5962                       | 0.5769                      |
+
+- High ratings (4 and 5) dominate regardless of popularity, but are slightly more likely for highly popular books.
+
+### Inference Examples
+
+- Given `Book_Popularity=High`, the most probable rating is 5 (59.6%).
+- Given `Rating_Prediction=5`, the probability distribution of popularity is near even (High: 48.1%, Low: 51.8%).
 
 
 ---
 
-# Train Your Model! (5 pts)
+# Interpretation
 
-- Include a clean, well-documented portion of your training code.  
-- Provide either a code snippet here or link to the relevant section in your notebook.
+- Ratings are skewed towards higher values regardless of popularity, reflecting the real-world tendency of positive review bias.
+- The near-even posterior probability for popularity given a high rating suggests popularity alone is not strongly predictive of rating.
+- Compared to a baseline of guessing the most common value, it is not predictive. 
 
 ---
 
-# Conclusion / Results (15 pts)
+# Points of Improvement
 
-- **Detailed Results**  
-  Describe your results thoroughly, including any helpful visualizations such as heatmaps or confusion matrices (if applicable).  
-  Provide numerical results where possible.
+1. **Feature Engineering:**
+   - Adding additional features to the model
+   - Was not able to do this due to issues with the group
+   - Will be addressed and expanded upon
 
-- **Interpretation**  
-  Interpret what your results mean.  
-  If performance is poor, compare against simple baselines like random guessing to contextualize your model's effectiveness.
+2. **Increasing amount of data set**
+   - Increasing quantity can result in less variation in the data
 
-- **Points of Improvement**  
-  Propose specific, thoughtful improvements for your model.  
-  Avoid vague statements like "more data" or "use reinforcement learning".  
-  Instead, analyze your preprocessing steps, training methods, potential simplifications, dataset biases, or errors that may have impacted performance.  
-  Implementation of these improvements is not required unless your model clearly lacks detail or effort.
 
 ---
 
 # References
 
 - [pgmpy Documentation](https://pgmpy.org/)
-- [Other libraries or resources used]
