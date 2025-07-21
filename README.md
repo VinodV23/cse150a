@@ -38,7 +38,7 @@ Uncertainty modeling is crucial for this problem because the data inherently con
 
 # Train Your Model!
 
-![Alt text](filename.jpg)
+![Alt text](Results.png)
 
 
 ---
