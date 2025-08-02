@@ -65,9 +65,15 @@ Assumes that the sentiment of reviews might shift over time with potential chang
 
 ### Model Summary
 
-- Bayesian Network structure: `Book_Popularity` → `Rating_Prediction`.
+- Bayesian Network structure:
+
+Book_Popularity → Review_Helpfulness → Rating_Prediction
+
+Review_Length → Rating_Prediction
+
+Time_Factor → Sentiment_Score → Review_Helpfulness
+
 - Trained on 1000 samples with Maximum Likelihood Estimation.
-- CPDs show how `Rating_Prediction` depends on `Book_Popularity`.
 
 ### Numerical Results
 
