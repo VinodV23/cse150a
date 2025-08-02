@@ -77,22 +77,11 @@ Time_Factor → Sentiment_Score → Review_Helpfulness
 
 ### Numerical Results
 
-**CPDs example for `Rating_Prediction` given `Book_Popularity`:**
+![Alt text](Results.png)
 
-| Rating | P(Rating \| Popularity=High) | P(Rating \| Popularity=Low) |
-|--------|------------------------------|-----------------------------|
-| 1      | 0.0677                       | 0.0721                      |
-| 2      | 0.0592                       | 0.0512                      |
-| 3      | 0.0761                       | 0.0778                      |
-| 4      | 0.2008                       | 0.2220                      |
-| 5      | 0.5962                       | 0.5769                      |
-
-- High ratings (4 and 5) dominate regardless of popularity, but are slightly more likely for highly popular books.
-
-### Inference Examples
-
-- Given `Book_Popularity=High`, the most probable rating is 5 (59.6%).
-- Given `Rating_Prediction=5`, the probability distribution of popularity is near even (High: 48.1%, Low: 51.8%).
+- Test Set Accuracy of 64%
+- Random would be approximately 20%
+- Even just purely using the majority Rating (5) would be around 57 percent. 
 
 
 ---
@@ -100,20 +89,19 @@ Time_Factor → Sentiment_Score → Review_Helpfulness
 # Interpretation
 
 - Ratings are skewed towards higher values regardless of popularity, reflecting the real-world tendency of positive review bias.
-- The near-even posterior probability for popularity given a high rating suggests popularity alone is not strongly predictive of rating.
-- Compared to a baseline of guessing the most common value, it is not predictive. 
+- There does seem to be a conditional dependence between Rating_Prediction and both Review_Helpfulness and Review_Length.
+- Compared to a baseline of guessing the most common value, the model is predictive.  
 
 ---
 
 # Points of Improvement
 
-1. **Feature Engineering:**
-   - Adding additional features to the model
-   - Was not able to do this due to issues with the group
-   - Will be addressed and expanded upon
+1. **Feature Changes:**
+   - Rethinking some of the edges between the various nodes is a subjective thing, though. 
+   - Consider adding in hidden variables to see if there are unobserved influences.
 
 2. **Increasing amount of data set**
-   - Increasing quantity can result in less variation in the data
+   - Expanding the size of the data set will have to be balanced with practicality. 
 
 
 ---
