@@ -55,7 +55,7 @@ Assumes that the sentiment of reviews might shift over time with potential chang
 
 # Train Your Model!
 
-![Alt text](Results.png)
+![Alt text](Updated_Model.png)
 
 
 ---
