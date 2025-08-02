@@ -7,10 +7,10 @@ https://www.kaggle.com/datasets/mohamedbakhet/amazon-books-reviews
 
 | Component        | Description                                                                                                                                                                                                                                                                                  |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Performance Measure** | By checking to see the likelihoods that are determined by the agent |
+| **Performance Measure** | By determining the accuracy of the trained model on a subset of the dataset (the test data) |
 | **Environment**         | The agent operates within an Amazon Books Review Dataset, which contains ~3GB of historical review data with millions of user reviews and book metadata. This environment is static and partially observable, since user profiles and reading histories are incomplete.                            |
-| **Actuators**           | The agent’s actuators produce predictions and recommendations, including:<br>- Rating predictions on a 1–5 star scale with confidence intervals.<br>- Helpfulness scores classifying reviews as "helpful" or "not helpful" along with probability estimates.                         |
-| **Sensors**             | The agent receives input from multiple modalities:<br>- *User features:* IDs, profile names, historical review patterns.<br>- *Book features:* Genre, author, price, publication date, description.<br>- *Review features:* Text length, sentiment, rating, timestamp.<br>- *Social features:* Helpfulness votes, total rating counts indicating popularity and credibility.                                          |
+| **Actuators**           | The agent’s actuators produce predictions and recommendations, including:<br>- Rating predictions on a 1–5 star scale.<br>- Helpfulness scores classifying reviews as "helpful" or "not helpful" along with probability estimates.                         |
+| **Sensors**             | The agent receives input from multiple modalities:<br>- *Review features:* Text length, sentiment, rating, timestamp.<br>- *Social features:* Helpfulness votes, total rating counts indicating popularity and credibility.                                          |
 
 ---
 
@@ -18,7 +18,7 @@ https://www.kaggle.com/datasets/mohamedbakhet/amazon-books-reviews
 Online book platforms face a major challenge: predicting which books users will rate highly and which reviews will be most helpful to other customers. With millions of books available, customers rely heavily on ratings and reviews to make purchasing decisions, but not all reviews are equal. This creates a complex recommendation environment where platforms must navigate uncertainty about user preferences while ensuring that the most valuable reviews are highlighted to aid customer decision-making.
 
 ### Why Uncertainty Modeling is Important  
-Uncertainty modeling is crucial for this problem because the data inherently contains multiple sources of uncertainty that significantly impact prediction accuracy. Most users only review a small fraction of the books they read, creating uncertainty about their true preferences and reading patterns. Reading preferences vary greatly between individuals based on genre preferences, reading experience, and personal taste, making it difficult to generalize from limited user data. Some reviews are more informative and helpful than others, but this helpfulness depends on multiple factors, including the reviewer's expertise, writing quality, and the relevance of their perspective to other readers. User preferences and review patterns also change over time, introducing temporal uncertainty that static models cannot capture. Additionally, we often lack complete information about user demographics, reading history, or the context in which they read specific books, creating additional layers of uncertainty that must be modeled probabilistically.
+Uncertainty modeling is needed for this problem because the data inherently contains multiple sources of uncertainty that significantly impact prediction accuracy. Most users only review a small fraction of the books they read, creating uncertainty about their true preferences and reading patterns. In addition, reading preferences vary greatly between individuals based on genre preferences, reading experience, and personal taste, making it difficult to generalize from limited user data. Some reviews are more informative and helpful than others, but this helpfulness depends on multiple factors, including the reviewer's expertise, writing quality, and the relevance of their perspective to other readers.  Additionally, we often lack complete information about user demographics, reading history, or the context in which they read specific books, creating additional layers of uncertainty that must be modeled probabilistically.
 
 
 
@@ -26,15 +26,32 @@ Uncertainty modeling is crucial for this problem because the data inherently con
 ## Key Variables
 - **Rating_Prediction:** Target variable representing the rating a user gives to a book, on a scale from 1 to 5 stars.
 - **Book_Popularity:** Observable variable derived from the total ratings count, indicating popularity levels (e.g., Low, High).
+- **Review_Length:** Categorized by length of text into Short, Medium, or Long.
+- **Sentiment_Score:** Used keywords such as "good", "great", "bad" to classify into Positive, Negative, or Neutral.
+- **Time_Factor:** The time since the review and grouped into Recent and Old. 
+- **Review_Helpfulness:** Found a helpfulness ratio, and then if positive then was deemed "Helpful". "Not_Helpful" if not.
 
   
 ## Connections
 
-- Popularity is the parent of prediction. This comes from preestablished expectations. In successive models, more factors will be incorporated. 
+- Book_Popularity → Review_Helpfulness
+Assumes that more popular books are likely to have more helpful reviews, either due to visibility or larger audiences voting on helpfulness.
+
+- Review_Helpfulness → Rating_Prediction
+Suggests that reviews marked as helpful may correspond to more thoughtful ratings, impacting the predicted score.
+
+- Review_Length → Rating_Prediction
+Suggests that longer length correlates with stronger user opinions, which may correlate with the given rating.
+
+- Sentiment_Score → Review_Helpfulness
+Suggests that the sentiment of the review (positive, negative, neutral) might affect whether other users find it helpful, such as clearly positive or negative reviews may be perceived as more informative.
+
+- Time_Factor → Sentiment_Score
+Assumes that the sentiment of reviews might shift over time with potential changes in trends on the book.
 
 ## Parameter Calculation Process
 
-**Conditional Probability Tables (CPTs)** are estimated primarily using **Maximum Likelihood Estimation (MLE)** for observed variables with sufficient data.   
+**Conditional Probability Tables (CPTs)** are estimated using **Maximum Likelihood Estimation (MLE)**.    
 
 # Train Your Model!
 
